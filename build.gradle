@@ -31,6 +31,10 @@ buildscript {
   }
 }
 
+plugins {
+  id 'maven-publish'
+}
+
 apply from: "$rootDir/gradle/dependencies.gradle"
 
 allprojects {
@@ -1164,4 +1168,23 @@ task aggregatedJavadoc(type: Javadoc) {
   includes = projectsWithJavadoc.collectMany { it.javadoc.getIncludes() }
   excludes = projectsWithJavadoc.collectMany { it.javadoc.getExcludes() }
   options.links "http://docs.oracle.com/javase/7/docs/api/"
+}
+
+publishing {
+  repositories {
+    maven {
+      name = "GitHubPackages"
+      url = "https://maven.pkg.github.com/Ran-1022/kafka"
+      credentials {
+        username = project.findProperty("gpr.user")
+        password = project.findProperty("gpr.key")
+      }
+    }
+  }
+
+  publications {
+    gpr(MavenPublication) {
+      from(components.java)
+    }
+  }
 }
